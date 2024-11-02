@@ -18,12 +18,12 @@ Intended to be a fun pet project. :sweat_smile:
 
 ## Installation
 
-Building MathPy requires the following installed software:
+Building PyMath requires the following installed software:
 
 - Python 3.9 or newer
 - C compiler that supports at least C99
 
-To install MathPy, clone the repository and run:
+To install PyMath, clone the repository and run:
 
 ```
 pip install .
