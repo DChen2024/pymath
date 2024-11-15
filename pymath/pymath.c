@@ -1,7 +1,21 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+#if PY_MAJOR_VERSION < 3 || (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 6)
+#error "pymath requires at least Python 3.6"
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ < 199901L
+#error "pymath requires at least C99"
+#endif
+
+PyDoc_STRVAR(module_doc, "This extension module provides some basic "
+    "math utility functions\nnot part of the Python standard library.");
+
+PyDoc_STRVAR(version, "1.0.0");
+
 /** 
+ * Use PEP 7 as a guideline for writing C code.
+ * https://peps.python.org/pep-0007/
+ * 
  * Use the implementation of the Python standard math library as a reference.
  * - https://github.com/python/cpython/blob/main/Modules/mathmodule.c
  * - https://github.com/python/cpython/blob/main/Modules/clinic/mathmodule.c.h
@@ -17,9 +31,11 @@
  *   - https://github.com/python/cpython/blob/v3.12.0/Objects/longobject.c
  */
 
-static const char* version = "1.0.0";
+PyDoc_STRVAR(ilog2_doc, "ilog2($module, n, /)\n--\n\n"
+    "Calculate the integer base-2 logarithm of n, rounded down.\n\n"
+    "Raises ValueError if argument is not positive.");
 
-static PyObject* math_ilog2(PyObject* module, PyObject* n) {
+static PyObject* ilog2(PyObject* module, PyObject* n) {
     // Convert the object to a Python int
     n = PyNumber_Index(n);
     if (PyErr_Occurred()) { // TypeError, MemoryError
@@ -27,7 +43,7 @@ static PyObject* math_ilog2(PyObject* module, PyObject* n) {
     }
 
     // Check if the Python int is not positive
-    if (_PyLong_Sign(n) != 1) {
+    if (_PyLong_Sign(n) <= 0) {
         PyErr_SetString(PyExc_ValueError,
             "ilog2() argument must be positive");
         Py_DECREF(n);
@@ -45,32 +61,37 @@ static PyObject* math_ilog2(PyObject* module, PyObject* n) {
     return PyLong_FromSize_t(bit_length-1); // MemoryError
 }
 
-PyDoc_STRVAR(math_ilog2__doc__,
-    "Calculate the integer base-2 logarithm of n, rounded down.\n\n"
-    "Raises `ValueError` if argument is not positive");
+static int pymath_exec(PyObject *module) {
+    if (PyModule_AddStringConstant(module, "__version__", version) != 0)
+        return -1;
+    return 0;
+}
 
-static PyMethodDef math_methods[] = {
-    {"ilog2", math_ilog2, METH_O, math_ilog2__doc__},
+static PyMethodDef pymath_methods[] = {
+    {"ilog2", ilog2, METH_O, ilog2_doc},
     {NULL, NULL, 0, NULL} // Sentinel
 };
 
-PyDoc_STRVAR(module_doc,
-    "This project provides some basic math functions\n"
-    "not part of the Python standard library.");
+static PyModuleDef_Slot pymath_slots[] = {
+    {Py_mod_exec, pymath_exec},
+    {0, NULL} // Sentinel
+};
 
-static struct PyModuleDef mathmodule = {
-    PyModuleDef_HEAD_INIT,
+static struct PyModuleDef pymathmodule = {
+    .m_base = PyModuleDef_HEAD_INIT,
     .m_name = "pymath",
     .m_doc = module_doc,
     .m_size = -1,
-    .m_methods = math_methods,
+    .m_methods = pymath_methods,
+    // .m_slots = pymath_slots,
 };
 
-PyMODINIT_FUNC PyInit_core(void) {
-    PyObject* module = PyModule_Create(&mathmodule);
-    if (module == NULL) {
+PyMODINIT_FUNC PyInit_pymath(void) {
+    // return PyModuleDef_Init(&pymathmodule);
+    PyObject* module = PyModule_Create(&pymathmodule);
+    if (module == NULL)
         return NULL;
-    }
-    PyObject_SetAttrString(module, "__version__", PyUnicode_FromString(version));
+    if (PyModule_AddStringConstant(module, "__version__", version) != 0)
+        return NULL;
     return module;
 }

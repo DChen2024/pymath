@@ -1,6 +1,7 @@
 # PyMath
 
 - [Overview](#overview)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -8,22 +9,24 @@
 
 ## Overview
 
-This project implements some basic math functions not part of the Python
-standard library.
+This extension module implements some basic math utility functions not part
+of the Python standard library.
 
-Made this to become more familiar with GitHub. And with creating a C extension
-for Python.
+Made this to become more familiar with GitHub. And with creating an extension
+module for Python in C.
 
 Intended to be a fun pet project. :sweat_smile:
 
-## Installation
+## Requirements
 
-Building MathPy requires the following installed software:
+Building PyMath requires the following installed software:
 
-- Python 3.9 or newer
+- Python 3.6 or higher
 - C compiler that supports at least C99
 
-To install MathPy, clone the repository and run:
+## Installation
+
+To install PyMath, clone the repository and run:
 
 ```
 pip install .

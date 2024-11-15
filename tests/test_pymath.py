@@ -1,12 +1,12 @@
 from timeit import timeit
-import utils
+import pymath_py
 import pymath
 
 n = 1000000
 
 def ilog2_python():
     for i in range(1, n):
-        utils.ilog2(i)
+        pymath_py.ilog2(i)
 
 def ilog2_c_impl():
     for i in range(1, n):

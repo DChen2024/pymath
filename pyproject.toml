@@ -1,9 +1,15 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pymath"
 version = "1.0.0"
-description = "Basic math functions not part of the Python standard library"
-requires-python = ">=3.9"
+requires-python = ">=3.6"
+
+[tool.setuptools]
+ext-modules = [{name = "pymath", sources = ["pymath/pymath.c"]}]
+packages = []
+
+[tool.setuptools.data-files]
+"lib/site-packages" = ["pymath/pymath.py", "pymath/pymath.pyi"]
